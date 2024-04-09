@@ -1,20 +1,33 @@
 import PySimpleGUI as sg
+import random
 sg.theme('DarkAmber')
-def comecarJogo():
+def comecarJogo(jogadores):
     layout = [
-        [sg.Image("image.png", key='-BACKGROUND-', enable_events=True)]
+        [sg.Image("image.png", key='-BACKGROUND-', enable_events=True)],
+        [sg.Button(image_filename="dado.png", size=(10, 10), key='sorteio')]
     ]
     window = sg.Window('jogo', layout)
     while a == True:
         event, values = window.read()
         if(event == sg.WIN_CLOSED or event == 'Cancelar'):
             break
-
+        while(True):
+            for i in jogadores:
+                jogador = i['nome']
+                if(event == 'sorteio'):
+                    sg.popup('Vez do jogador', jogador, title='Jogo') 
+                    sorteio = random.randint(1, 6)
+                    i['posicao'] += sorteio
+                    sg.popup("Saiu no dado {sorteio}", i['posicao'], title='Jogo')
+                    i['posicao'] = cartas(jogador, i['posicao'])
+                if(i['posicao'] >= 51):
+                    ganhador = jogador
+                    terminaJogo(ganhador)
 def adicionarJogador(jogadores, icon):
     layout = [
         [sg.Text('Deseja adicionar outro jogador?')],
         [sg.Button('Sim'), sg.Button('Jogar')]
-    ]
+    ] 
     window = sg.Window('registro', layout)
 
     while a == True:
@@ -24,7 +37,7 @@ def adicionarJogador(jogadores, icon):
         if(event == 'Sim'):
             if(len(jogadores) > 4):
                 sg.popup_error("Ocorreu um erro! Voce atingiu o numero maximo de 5 jogadores! \n Iniciando jogo", title="Erro")
-                comecarJogo()
+                comecarJogo(jogadores)
                 break
             else:
                 criaJogadores(jogadores, icon)
@@ -35,7 +48,7 @@ def adicionarJogador(jogadores, icon):
                 criaJogadores(jogadores, icon)
                 break
             else:
-                comecarJogo()
+                comecarJogo(jogadores)
                 break
     window.close()
 def criaJogadores(jogadores, icon):
@@ -57,7 +70,7 @@ def criaJogadores(jogadores, icon):
         if(event == sg.WIN_CLOSED or event == 'Cancelar'):
             break
         if(event == 'OK'):
-            jogadores.append({"nome": valor1, "senha": valor2, "icon": values[1]})
+            jogadores.append({"nome": valor1, "senha": valor2, "icon": values[1], "posicao": 0})
             print(jogadores)
             window.close()
             adicionarJogador(jogadores, icon)
@@ -77,13 +90,13 @@ def criaTabuleiro():
         tabuleiro.append(num)
         print("[",num,"]")
 criaTabuleiro()
-def cartas(posicao):
+def cartas(nome, posicao):
     if(posicao == 3):
         print("O jogador", nome , " ganhou uma carta e devera avançar 3 casas")
         posicao += 3
     elif(posicao == 9):
         print("O jogador", nome , " ganhou uma carta e devera escolher um jogador para voltar 3 casas")
-        
+        posicao -= 3
     elif(posicao == 14):
         print("O jogador", nome , " ganhou uma carta e devera voltar 1 casa")
         posicao -= 1
