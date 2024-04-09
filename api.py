@@ -17,12 +17,14 @@ def comecarJogo(jogadores):
                 if(event == 'sorteio'):
                     sg.popup('Vez do jogador', jogador, title='Jogo') 
                     sorteio = random.randint(1, 6)
-                    i['posicao'] += sorteio
-                    sg.popup("Saiu no dado {sorteio}", i['posicao'], title='Jogo')
-                    i['posicao'] = cartas(jogador, i['posicao'])
-                if(i['posicao'] >= 51):
-                    ganhador = jogador
-                    terminaJogo(ganhador)
+                    i['posicao'] = i['posicao'] + sorteio
+                    sg.popup(f"Saiu no dado {sorteio}", i['posicao'], title='Jogo')
+                    if((cartas(jogador, i['posicao'])) > i['posicao']):
+                        i['posicao'] = cartas(jogador, i['posicao'])
+                        sg.popup(f"O {i['nome']} avancou para posicao", i['posicao'])
+                    if((cartas(jogador, i['posicao'])) < i['posicao']):
+                        i['posicao'] = cartas(jogador, i['posicao'])
+                        sg.popup(f"O {i['nome']} voltou para posicao", i['posicao'])
 def adicionarJogador(jogadores, icon):
     layout = [
         [sg.Text('Deseja adicionar outro jogador?')],
@@ -130,9 +132,11 @@ def cartas(nome, posicao):
     elif(posicao == 45):
         print("O jogador", nome , " ganhou uma carta e devera voltar 2 casas")
         posicao -= 2
+
     elif(posicao == 49):
         print("O jogador", nome , " ganhou uma carta e devera escolher um jogador para avancar 3 casas")
-        posicao += 3        
+        posicao += 3
+    return posicao        
 jogadores = []   
 icon = [":D", ":)", ":|", ":(", ";("]
 a = True
